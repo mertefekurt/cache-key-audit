@@ -1,33 +1,33 @@
 # Cache Key Audit
 
-Find tenant and user isolation risks in cache key designs. The repository is intentionally plain: a small command, a visible rule surface, and enough examples to make the behavior inspectable.
+![Cache Key Audit cover](assets/readme-cover.svg)
 
-## Project card
+Cache Key Audit is meant for quick pull-request checks around cache behavior. It favors explicit rules over a bulky dashboard.
 
-<img src="assets/readme-cover.svg" alt="Cache Key Audit cover" width="100%" />
+## Signal route
 
-| Detail | Value |
-| --- | --- |
-| Area | delivery and infrastructure |
-| Command | `cache-key-audit` |
-| Example | `examples/sample.txt` |
+![Rule flow](assets/readme-diagram.svg)
 
-## What would make me stop a review
+## What gets flagged
 
-| Stopper | Level | Why it matters |
-| --- | --- | --- |
-| `missing-tenant` | high | tenant dimension is missing |
-| `missing-user` | medium | user dimension may be missing |
-| `shared-cache` | low | shared cache is enabled |
+| Signal | Level | What it flags | Fix direction |
+| --- | --- | --- | --- |
+| `missing-tenant` | high | tenant dimension is missing | Include tenant or workspace ID in the cache key. |
+| `missing-user` | medium | user dimension may be missing | Include user ID for personalized responses. |
+| `shared-cache` | low | shared cache is enabled | Confirm response is safe for shared caching. |
 
-## Run from a fresh clone
+## Try the fixture
 
 ```bash
 git clone https://github.com/mertefekurt/cache-key-audit.git
 cd cache-key-audit
-python -m venv .venv
-source .venv/bin/activate
 python -m pip install -e ".[dev]"
 cache-key-audit examples/sample.txt
-cache-key-audit examples/sample.txt --json
+```
+
+## Example lines
+
+```text
+risky: cache key /account/settings tenant missing user missing shared true
+clean: cache key tenant:{tenant_id}:user:{user_id}:settings shared false ttl 300
 ```
