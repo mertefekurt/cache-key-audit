@@ -1,16 +1,27 @@
-# cache-key-audit
+<img src="assets/readme-cover.svg" alt="Cache Key Audit cover" width="100%" />
 
-**Notebook Style.** Find tenant and user isolation risks in cache key designs.
+# Cache Key Audit
 
-## Context
+Find tenant and user isolation risks in cache key designs.
 
-Bad cache keys can leak data across users or tenants. This CLI checks cache-key notes and configs for missing isolation dimensions.
+![stack](https://img.shields.io/badge/stack-Python-be185d?style=flat-square) ![python](https://img.shields.io/badge/python-3.11-4b5563?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-2563eb?style=flat-square) ![ci](https://img.shields.io/badge/ci-GitHub%20Actions-16a34a?style=flat-square)
 
-## Cell 1: Install
+## Workflow
 
-`cache-key-audit` accepts cache key design notes or config text in text, JSON, JSONL, or CSV form.
+1. Collect the review notes or exported records.
+2. Run `cache-key-audit` against the file.
+3. Read the findings in Markdown, or switch to JSON for automation.
+4. Fail CI only at the severity level you care about.
 
-## Cell 2: Run
+## Checks
+
+| Rule | Severity | What it catches |
+| --- | --- | --- |
+| `missing-tenant` | high | tenant dimension is missing |
+| `missing-user` | medium | user dimension may be missing |
+| `shared-cache` | low | shared cache is enabled |
+
+## Command line
 
 ```bash
 python -m pip install -e ".[dev]"
@@ -18,30 +29,19 @@ cache-key-audit examples/sample.txt
 cache-key-audit examples/sample.txt --json --fail-on medium
 ```
 
-## Cell 3: Interpret
-
-| Rule | Severity | Meaning |
-|---|---:|---|
-| `missing-tenant` | high | tenant dimension is missing |
-| `missing-user` | medium | user dimension may be missing |
-| `shared-cache` | low | shared cache is enabled |
-
-## Tests
-
-```bash
-ruff check .
-pytest
-python -m cache_key_audit --help
-```
-
-License: MIT
-
-### Example Input
+## Sample risky input
 
 ```text
 cache key /account/settings tenant missing user missing shared true
 ```
 
-### Architecture
+## Project shape
 
-`cli.py` reads files, `core.py` evaluates records, and `rules.py` keeps the cache-key-audit policy surface explicit.
+```text
+.github/        CI workflow
+examples/       sample inputs
+src/            package source
+tests/          test coverage
+.gitignore      project file
+pyproject.toml  package metadata
+```
